@@ -3,47 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juego Matemático</title>
+<title>MathMania</title>
 <style>
   body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #E0FFFF; /* Color de fondo hermoso */
-    transition: background-color 0.5s ease; /* Animación suave de cambio de color de fondo */
+    background-color: #E0FFFF;
+    transition: background-color 0.5s ease;
   }
   h1 {
-    font-size: 48px; /* Tamaño grande para el título principal */
-    color: #ff0000; /* Color llamativo para el título principal */
-    transition: transform 0.5s ease; /* Animación de zoom */
+    font-size: 48px;
+    color: #ff0000;
+    transition: transform 0.5s ease;
   }
   h1:hover {
-    transform: scale(1.1); /* Efecto de zoom al pasar el cursor */
+    transform: scale(1.1);
   }
-  .respuesta-btn {
-    font-size: 24px; /* Tamaño grande para los botones de respuesta */
+  .respuesta-btn, .difficulty-btn, .mode-btn {
+    font-size: 24px;
     margin: 10px;
     padding: 15px 30px;
     cursor: pointer;
-    background-color: #4caf50; /* Color verde para los botones de respuesta */
-    color: #fff; /* Texto blanco para los botones de respuesta */
+    background-color: #4caf50;
+    color: #fff;
     border: none;
     border-radius: 8px;
-    transition: background-color 0.3s, transform 0.5s ease; /* Transición suave y animación de zoom */
+    transition: background-color 0.3s, transform 0.5s ease;
   }
-  .respuesta-btn:hover {
-    background-color: #45a049; /* Color verde más oscuro al pasar el ratón */
-    transform: scale(1.05); /* Efecto de zoom al pasar el cursor */
+  .respuesta-btn:hover, .difficulty-btn:hover, .mode-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
   }
-  .respuesta-btn:focus {
-    outline: none; /* Eliminar el contorno al enfocar */
+  .respuesta-btn:focus, .difficulty-btn:focus, .mode-btn:focus {
+    outline: none;
   }
   .mensaje {
     position: fixed;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #ff6f61; /* Color de fondo para el mensaje */
-    color: #fff; /* Texto blanco para el mensaje */
+    background-color: #ff6f61;
+    color: #fff;
     padding: 10px 20px;
     border-radius: 8px;
     font-size: 20px;
@@ -60,71 +60,96 @@
     width: 0;
     height: 30px;
     background-color: #4caf50;
-    transition: width 0.5s ease; /* Animación suave de progreso */
+    transition: width 0.5s ease;
+  }
+  .dark-mode {
+    background-color: #333;
+    color: #fff;
+  }
+  #difficulty-buttons {
+    margin-bottom: 20px;
   }
 </style>
 </head>
 <body>
   <h1>MathMania</h1>
-  <div id="operacion" style="font-size: 36px;"></div> <!-- Números más grandes y bonitos -->
+  <div id="operacion" style="font-size: 36px;"></div>
   <div id="respuestas"></div>
   <div id="mensaje" class="mensaje" style="display: none;"></div>
   <div class="progress-bar">
     <div id="progress" class="progress"></div>
   </div>
 
+  <h2>Selecciona una Dificultad</h2>
+  <div id="difficulty-buttons">
+    <button onclick="setDifficulty('easy')" style="background-color: #8cff66;" class="difficulty-btn">Fácil</button>
+    <button onclick="setDifficulty('medium')" style="background-color: #ffcc00;" class="difficulty-btn">Media</button>
+    <button onclick="setDifficulty('hard')" style="background-color: #ff6666;" class="difficulty-btn">Difícil</button>
+  </div>
+  
+  <button onclick="toggleDarkMode()" style="margin-top: 20px;" class="mode-btn">Modo Oscuro</button>
+
   <script>
     let correctAnswer;
     let score = 0;
     let totalQuestions = 0;
 
-    // Función para generar una operación aleatoria dependiendo de la dificultad
     function generarOperacion() {
       var num1, num2;
-
-      // Ajustar los rangos de los números dependiendo de la dificultad
+      var operadores = ['+', '-', '*', '/'];
+      var operador = operadores[Math.floor(Math.random() * operadores.length)];
+      
       switch (difficulty) {
         case 'easy':
-          num1 = Math.floor(Math.random() * 5) + 1; // Números entre 1 y 5
+          num1 = Math.floor(Math.random() * 5) + 1;
           num2 = Math.floor(Math.random() * 5) + 1;
           break;
         case 'medium':
-          num1 = Math.floor(Math.random() * 10) + 1; // Números entre 1 y 10
+          num1 = Math.floor(Math.random() * 10) + 1;
           num2 = Math.floor(Math.random() * 10) + 1;
           break;
         case 'hard':
-          num1 = Math.floor(Math.random() * 20) + 1; // Números entre 1 y 20
+          num1 = Math.floor(Math.random() * 20) + 1;
           num2 = Math.floor(Math.random() * 20) + 1;
           break;
         default:
-          num1 = Math.floor(Math.random() * 10) + 1; // Dificultad media por defecto
+          num1 = Math.floor(Math.random() * 10) + 1;
           num2 = Math.floor(Math.random() * 10) + 1;
       }
 
-      var operadores = ['+', '-', '*', '/'];
-      var operador = operadores[Math.floor(Math.random() * operadores.length)];
-      var operacion = num1 + ' ' + operador + ' ' + num2;
-      correctAnswer = eval(operacion);
+      var operacion;
+      switch (operador) {
+        case '+':
+          correctAnswer = num1 + num2;
+          break;
+        case '-':
+          correctAnswer = num1 - num2;
+          break;
+        case '*':
+          correctAnswer = num1 * num2;
+          break;
+        case '/':
+          correctAnswer = parseFloat((num1 / num2).toFixed(2));
+          break;
+      }
+      operacion = num1 + ' ' + operador + ' ' + num2;
       return operacion;
     }
 
-    // Función para mostrar una nueva operación en pantalla
     function mostrarOperacion() {
       var nuevaOperacion = generarOperacion();
       document.getElementById("operacion").textContent = nuevaOperacion;
 
-      // Generar botones de respuesta aleatoria
       var respuestas = [];
       respuestas.push(correctAnswer);
       while (respuestas.length < 4) {
-        var randomAnswer = Math.floor(Math.random() * 30) + 1; // Generar número aleatorio entre 1 y 30
+        var randomAnswer = Math.floor(Math.random() * 40) - 10;
         if (!respuestas.includes(randomAnswer)) {
           respuestas.push(randomAnswer);
         }
       }
-      respuestas.sort(() => Math.random() - 0.5); // Mezclar las respuestas aleatoriamente
+      respuestas.sort(() => Math.random() - 0.5);
 
-      // Mostrar botones de respuesta en la página
       var respuestasDiv = document.getElementById("respuestas");
       respuestasDiv.innerHTML = "";
       respuestas.forEach(function(answer) {
@@ -132,13 +157,13 @@
         button.textContent = answer;
         button.className = "respuesta-btn";
         button.onclick = function() {
+          playButtonClickSound();
           verificarRespuesta(answer);
         };
         respuestasDiv.appendChild(button);
       });
     }
 
-    // Función para mostrar un mensaje temporal
     function mostrarMensaje(mensaje, tipo) {
       var mensajeDiv = document.getElementById("mensaje");
       mensajeDiv.textContent = mensaje;
@@ -146,72 +171,62 @@
       mensajeDiv.style.display = 'block';
       setTimeout(function() {
         mensajeDiv.style.display = 'none';
-      }, 2000); // Ocultar el mensaje después de 2 segundos (2000 milisegundos)
+      }, 2000);
     }
 
-    // Función para verificar si la respuesta seleccionada por el usuario es correcta
     function verificarRespuesta(respuestaUsuario) {
       totalQuestions++;
       if (respuestaUsuario == correctAnswer) {
         score++;
         mostrarMensaje("¡Correcto!", 'correcto');
-        audioCorrect.play(); // Reproducir efecto de sonido para respuesta correcta
+        audioCorrect.play();
       } else {
         mostrarMensaje("Incorrecto. La respuesta correcta es " + correctAnswer, 'incorrecto');
-        audioIncorrect.play(); // Reproducir efecto de sonido para respuesta incorrecta
+        audioIncorrect.play();
       }
-      // Mostrar una nueva operación después de verificar la respuesta
       mostrarOperacion();
       actualizarBarraProgreso();
     }
 
-    // Función para actualizar la barra de progreso
     function actualizarBarraProgreso() {
       var progress = (score / totalQuestions) * 100;
       document.getElementById("progress").style.width = progress + '%';
     }
 
-    let difficulty = 'medium'; // Dificultad por defecto
-    
-    // Función para ajustar la dificultad del juego
-    function setDifficulty(level) {
+    let difficulty = 'medium';
+
+    function
+    setDifficulty(level) {
       difficulty = level;
-      mostrarOperacion(); // Mostrar una nueva operación con la nueva dificultad
+      mostrarOperacion();
     }
 
-    // Mostrar la primera operación al cargar la página
-    mostrarOperacion();
-  </script>
-
-  <h2>Selecciona una Dificultad</h2>
-  <button onclick="setDifficulty('easy')" style="background-color: #8cff66;" class="respuesta-btn">Fácil</button>
-  <button onclick="setDifficulty('medium')" style="background-color: #ffcc00;" class="respuesta-btn">Media</button>
-  <button onclick="setDifficulty('hard')" style="background-color: #ff6666;" class="respuesta-btn">Difícil</button>
-
-  <!-- Botón para cambiar el modo claro y oscuro -->
-  <button onclick="toggleDarkMode()" style="margin-top: 20px;" class="respuesta-btn">Modo Oscuro</button>
-
-  <!-- Script para efectos de sonido -->
-  <script>
-    // Efecto de sonido para respuesta correcta
-    var audioCorrect = new Audio('https://www.soundjay.com/button/beep-07.wav');
-    // Efecto de sonido para respuesta incorrecta
-    var audioIncorrect = new Audio('https://www.soundjay.com/button/beep-09.wav');
-
-    // Función para alternar entre el modo claro y el modo oscuro
     function toggleDarkMode() {
       var body = document.body;
       body.classList.toggle("dark-mode");
     }
-  </script>
 
-  <!-- Estilos para el modo oscuro -->
-  <style>
-    .dark-mode {
-      background-color: #333;
-      color: #fff;
+    // Enlaces de sonido
+    let audioCorrect = new Audio('https://freesound.org/data/previews/80/80921_1022651-lq.mp3');
+    let audioIncorrect = new Audio('https://freesound.org/data/previews/121/121099_2193266-lq.mp3');
+    let audioButtonClick = new Audio('https://pixabay.com/es/music/error-126627-210225/');
+    let audioBackground = new Audio('https://www.youtube.com/watch?v=rgjt6VDfaes');
+
+    // Configuración de la música de fondo
+    audioBackground.loop = true; // Repetir la música
+    audioBackground.volume = 0.5; // Volumen moderado
+    audioBackground.play(); // Iniciar la música
+
+    function playButtonClickSound() {
+      audioButtonClick.play();
     }
-  </style>
 
+    // Agregar el sonido de clic a los botones de dificultad y modo oscuro
+    document.querySelectorAll('.difficulty-btn, .mode-btn').forEach(function(button) {
+      button.addEventListener('click', playButtonClickSound);
+    });
+
+    mostrarOperacion();
+  </script>
 </body>
 </html>
